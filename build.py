@@ -15,12 +15,13 @@ if __name__ == "__main__":
     parser.add_argument('--static', action="store_true", help='Build static libraries')
     args = parser.parse_args()
 
-    package_name = args.package_name[0]
+    os.chdir(os.path.dirname(__file__))
 
-    os.system("git submodule update --init conan-center-index")
-    subdir = "conan-center-index/recipes/{}/all".format(package_name)
-    for f in os.listdir(subdir):
-        shutil.move(os.path.join(subdir, f), f)
+    package_name = args.package_name[0]
+    recipe_path = os.path.join("conan-center-index", "recipes", package_name, "all")
+
+    for f in os.listdir(recipe_path):
+        shutil.move(os.path.join(recipe_path, f), f)
 
     builder = build_template_default.get_builder(pure_c=True)
 
