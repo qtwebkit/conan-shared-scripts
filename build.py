@@ -8,20 +8,25 @@ import shutil
 
 from bincrafters import build_template_default
 
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser(description='Build package from conan-center-index')
     parser.add_argument('package_name', type=str, nargs=1, help='Name of package in conan-center-index repository')
     parser.add_argument('--shared', action="store_true", help='Build shared libraries')
     parser.add_argument('--static', action="store_true", help='Build static libraries')
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def move_files_from_recipe(package_name):
     os.chdir(os.path.dirname(__file__))
-
-    package_name = args.package_name[0]
     recipe_path = os.path.join("conan-center-index", "recipes", package_name, "all")
-
     for f in os.listdir(recipe_path):
         shutil.move(os.path.join(recipe_path, f), f)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    package_name = args.package_name[0]
+    move_files_from_recipe(package_name)
 
     builder = build_template_default.get_builder(pure_c=True)
 
