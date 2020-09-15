@@ -7,6 +7,8 @@ import os
 import shutil
 
 from bincrafters import build_template_default
+from cpt.ci_manager import CIManager
+from cpt.printer import Printer
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Build package from conan-center-index')
@@ -23,10 +25,35 @@ def move_files_from_recipe(package_name):
         shutil.move(os.path.join(recipe_path, f), f)
 
 
+def is_tag():
+    printer = Printer()
+    ci_manager = CIManager(printer)
+    return ci_manager.is_tag()
+
+
+def set_variables():
+    os.environ["CONAN_USERNAME"] = "qtproject"
+    os.environ["CONAN_LOGIN_USERNAME"] = "qtbot"
+    os.environ["CONAN_ARCHS"] = "x86,x86_64"
+    os.environ["CONAN_VISUAL_RUNTIMES"] = "MD,MDd"
+    os.environ["CONAN_REVISIONS_ENABLED"] = "1"
+
+    production_repo = "https://api.bintray.com/conan/qtproject/conan@True@qtproject"
+    testing_repo = "https://api.bintray.com/conan/qtproject/conan-testing@True@qtproject-testing"
+
+    if is_tag():
+        os.environ["CONAN_UPLOAD"] = production_repo
+        os.environ["CONAN_REMOTES"] = production_repo
+    else:
+        os.environ["CONAN_UPLOAD"] = testing_repo
+        os.environ["CONAN_REMOTES"] = ", ".join([testing_repo, production_repo])
+
+
 if __name__ == "__main__":
     args = parse_args()
     package_name = args.package_name[0]
     move_files_from_recipe(package_name)
+    set_variables()
 
     builder = build_template_default.get_builder(pure_c=True)
 
