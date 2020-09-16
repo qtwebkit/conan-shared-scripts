@@ -32,22 +32,28 @@ def is_tag():
     return ci_manager.is_tag()
 
 
+def set_env_variable_if_undefined(var, value):
+    if not var in os.environ:
+        os.environ[var] = value
+    print(f"Environment: {var} = {os.environ[var]}")
+
+
 def set_variables():
-    os.environ["CONAN_USERNAME"] = "qtproject"
-    os.environ["CONAN_LOGIN_USERNAME"] = "qtbot"
-    os.environ["CONAN_ARCHS"] = "x86,x86_64"
-    os.environ["CONAN_VISUAL_RUNTIMES"] = "MD,MDd"
-    os.environ["CONAN_REVISIONS_ENABLED"] = "1"
+    set_env_variable_if_undefined("CONAN_USERNAME", "qtproject")
+    set_env_variable_if_undefined("CONAN_LOGIN_USERNAME", "qtbot")
+    set_env_variable_if_undefined("CONAN_ARCHS", "x86,x86_64")
+    set_env_variable_if_undefined("CONAN_VISUAL_RUNTIMES", "MD,MDd")
+    set_env_variable_if_undefined("CONAN_REVISIONS_ENABLED", "1")
 
     production_repo = "https://api.bintray.com/conan/qtproject/conan@True@qtproject"
     testing_repo = "https://api.bintray.com/conan/qtproject/conan-testing@True@qtproject-testing"
 
     if is_tag():
-        os.environ["CONAN_UPLOAD"] = production_repo
-        os.environ["CONAN_REMOTES"] = production_repo
+        set_env_variable_if_undefined("CONAN_UPLOAD", production_repo)
+        set_env_variable_if_undefined("CONAN_REMOTES", production_repo)
     else:
-        os.environ["CONAN_UPLOAD"] = testing_repo
-        os.environ["CONAN_REMOTES"] = ", ".join([testing_repo, production_repo])
+        set_env_variable_if_undefined("CONAN_UPLOAD", testing_repo)
+        set_env_variable_if_undefined("CONAN_REMOTES", f"{testing_repo}, {production_repo}")
 
 
 if __name__ == "__main__":
