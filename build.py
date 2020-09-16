@@ -16,11 +16,12 @@ def parse_args():
     parser.add_argument('package_version', type=str, nargs=1, help='Package version to build (must be present in config.yml of recipe)')
     parser.add_argument('--shared', action="store_true", help='Build shared libraries')
     parser.add_argument('--static', action="store_true", help='Build static libraries')
+    parser.add_argument('--recipe-subdir', type=str, default='all', help='Subdirectory of recipe in conan-center-index("all" by default)')
     return parser.parse_args()
 
 
-def move_files_from_recipe(package_name):
-    recipe_path = f"{os.path.dirname(__file__)}/conan-center-index/recipes/{package_name}/all"
+def move_files_from_recipe(package_name, recipe_subdir):
+    recipe_path = f"{os.path.dirname(__file__)}/conan-center-index/recipes/{package_name}/{recipe_subdir}"
     for f in os.listdir(recipe_path):
         shutil.move(os.path.join(recipe_path, f), f)
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     package_name = args.package_name[0]
     package_version = args.package_version[0]
     package_reference = package_name + "/" + package_version
-    move_files_from_recipe(package_name)
+    move_files_from_recipe(package_name, args.recipe_subdir)
     set_variables()
 
     builder = ConanMultiPackager(reference=package_reference)
