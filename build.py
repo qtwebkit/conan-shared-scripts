@@ -6,8 +6,8 @@ import platform
 import os
 import shutil
 
-from bincrafters import build_template_default
 from cpt.ci_manager import CIManager
+from cpt.packager import ConanMultiPackager
 from cpt.printer import Printer
 
 def parse_args():
@@ -55,7 +55,8 @@ if __name__ == "__main__":
     move_files_from_recipe(package_name)
     set_variables()
 
-    builder = build_template_default.get_builder(pure_c=True)
+    builder = ConanMultiPackager()
+    builder.add_common_builds()
 
     items = []
     for item in builder.items:
