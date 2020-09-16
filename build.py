@@ -51,6 +51,7 @@ def set_variables():
     if is_tag():
         set_env_variable_if_undefined("CONAN_UPLOAD", production_repo)
         set_env_variable_if_undefined("CONAN_REMOTES", production_repo)
+        set_env_variable_if_undefined("CONAN_CHANNEL", "stable")
     else:
         set_env_variable_if_undefined("CONAN_UPLOAD", testing_repo)
         set_env_variable_if_undefined("CONAN_REMOTES", f"{testing_repo}, {production_repo}")
