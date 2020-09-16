@@ -13,6 +13,7 @@ from cpt.printer import Printer
 def parse_args():
     parser = argparse.ArgumentParser(description='Build package from conan-center-index')
     parser.add_argument('package_name', type=str, nargs=1, help='Name of package in conan-center-index repository')
+    parser.add_argument('package_version', type=str, nargs=1, help='Package version to build (must be present in config.yml of recipe)')
     parser.add_argument('--shared', action="store_true", help='Build shared libraries')
     parser.add_argument('--static', action="store_true", help='Build static libraries')
     return parser.parse_args()
@@ -52,10 +53,12 @@ def set_variables():
 if __name__ == "__main__":
     args = parse_args()
     package_name = args.package_name[0]
+    package_version = args.package_version[0]
+    package_reference = package_name + "/" + package_version
     move_files_from_recipe(package_name)
     set_variables()
 
-    builder = ConanMultiPackager()
+    builder = ConanMultiPackager(reference=package_reference)
     builder.add_common_builds()
 
     items = []
