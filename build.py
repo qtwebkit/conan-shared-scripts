@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
 import copy
@@ -20,8 +20,7 @@ def parse_args():
 
 
 def move_files_from_recipe(package_name):
-    os.chdir(os.path.dirname(__file__))
-    recipe_path = os.path.join("conan-center-index", "recipes", package_name, "all")
+    recipe_path = f"{os.path.dirname(__file__)}/conan-center-index/recipes/{package_name}/all"
     for f in os.listdir(recipe_path):
         shutil.move(os.path.join(recipe_path, f), f)
 
