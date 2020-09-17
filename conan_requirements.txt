@@ -1,6 +1,5 @@
-# Generated for conan_package_tools==0.34.2 bincrafters_package_tools==0.27.5 conan==1.29.0
+# Generated for conan_package_tools==0.34.2 conan==1.29.0
 appdirs==1.4.4
-bincrafters-package-tools==0.27.5
 bottle==0.12.18
 certifi==2020.6.20
 chardet==3.0.4
@@ -22,7 +21,7 @@ node-semver==0.6.1
 packaging==20.4
 patch-ng==1.17.4
 pluginbase==1.0.0
-Pygments==2.7.0
+Pygments==2.7.1
 PyJWT==1.7.1
 pyparsing==2.4.7
 python-dateutil==2.8.1
