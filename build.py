@@ -6,6 +6,7 @@ import platform
 import os
 import shutil
 
+from conans import tools
 from cpt.ci_manager import CIManager
 from cpt.packager import ConanMultiPackager
 from cpt.printer import Printer
@@ -20,10 +21,18 @@ def parse_args():
     return parser.parse_args()
 
 
+def apply_patches(patch_dir, target_dir):
+    if os.path.isdir(patch_dir):
+        for f in sorted(os.listdir(patch_dir)):
+            patch_path = os.path.join(patch_dir, f)
+            print(f"Applying {patch_path} to {target_dir}...")
+            tools.patch(base_path=target_dir, patch_file=patch_path)
+
+
 def move_files_from_recipe(package_name, recipe_subdir):
-    recipe_path = f"{os.path.dirname(__file__)}/conan-center-index/recipes/{package_name}/{recipe_subdir}"
-    for f in os.listdir(recipe_path):
-        shutil.move(os.path.join(recipe_path, f), f)
+    recipe_dir = f"{os.path.dirname(__file__)}/conan-center-index/recipes/{package_name}/{recipe_subdir}"
+    for f in os.listdir(recipe_dir):
+        shutil.move(os.path.join(recipe_dir, f), f)
 
 
 def is_tag():
@@ -62,6 +71,7 @@ if __name__ == "__main__":
     package_name = args.package_name[0]
     package_version = args.package_version[0]
     package_reference = package_name + "/" + package_version
+    apply_patches("patches", f"{os.path.dirname(__file__)}/conan-center-index")
     move_files_from_recipe(package_name, args.recipe_subdir)
     set_variables()
 
