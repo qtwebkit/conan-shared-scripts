@@ -30,7 +30,7 @@ __DATA__
 
 AppVeyor | GitHub Actions | Bintray
 -------- | -------------- | -------
-<% if (-e 'appveyor.yml') { %>[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/github/qtwebkit/conan-<%= $p{name} %>?svg=true)](https://ci.appveyor.com/project/annulen/conan-<%= $p{name} %>) | <% } else { %> - | <% } %><% if (-e '.github/workflows/conan.yml') { %>[![GitHub Actions Status](https://github.com/qtwebkit/conan-<%= $p{name} %>/workflows/conan/badge.svg)](https://github.com/qtwebkit/conan-<%= $p{name} %>/actions) | <% } else { %> - | <% } %>[![Bintray](https://api.bintray.com/packages/qtproject/conan/<%= $p{name} %>%3Aqtproject/images/download.svg)](https://bintray.com/qtproject/conan/<%= $p{name} %>%3Aqtproject/_latestVersion)
+<% if (-e 'appveyor.yml') { %>[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/github/qtwebkit/conan-<%= $p{name} %>?svg=true)](https://ci.appveyor.com/project/annulen/conan-<%= $p{name} %>) | <% } else { %> N/A | <% } %><% if (-e '.github/workflows/conan.yml') { %>[![GitHub Actions Status](https://github.com/qtwebkit/conan-<%= $p{name} %>/workflows/conan/badge.svg)](https://github.com/qtwebkit/conan-<%= $p{name} %>/actions) | <% } else { %> N/A | <% } %>[![Bintray](https://api.bintray.com/packages/qtproject/conan/<%= $p{name} %>%3Aqtproject/images/download.svg)](https://bintray.com/qtproject/conan/<%= $p{name} %>%3Aqtproject/_latestVersion)
 
 ## General Information
 
