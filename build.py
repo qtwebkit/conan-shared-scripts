@@ -20,14 +20,14 @@ def parse_args():
 
 
 def parse_config():
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(delimiters="=")
     config.read('build.cfg')
     if not config.has_section('package'):
         raise Exception("Malformed build.cfg: [package] section is missing")
 
     package = config['package']
     if 'name' in package and 'version' in package:
-        return package
+        return config
 
     raise Exception('Malformed build.cfg: "name" and "version" options in [package] section are mandatory')
 
@@ -58,12 +58,25 @@ def set_env_variable_if_undefined(var, value):
     print(f"Environment: {var} = {os.environ[var]}")
 
 
-def set_variables():
+def prepend_to_env_variable(var, value):
+    if not var in os.environ:
+        os.environ[var] = value
+    else:
+        oldvalue = os.environ.get(var)
+        os.environ[var] = f"{value},{oldvalue}"
+
+    print(f"Environment: {var} = {os.environ[var]}")
+
+
+def set_variables(conan_options):
     set_env_variable_if_undefined("CONAN_USERNAME", "qtproject")
     set_env_variable_if_undefined("CONAN_LOGIN_USERNAME", "qtbot")
     set_env_variable_if_undefined("CONAN_ARCHS", "x86,x86_64")
     set_env_variable_if_undefined("CONAN_VISUAL_RUNTIMES", "MD,MDd")
     set_env_variable_if_undefined("CONAN_REVISIONS_ENABLED", "1")
+
+    if conan_options:
+        prepend_to_env_variable("CONAN_OPTIONS", conan_options)
 
     production_repo = "https://api.bintray.com/conan/qtproject/conan@True@qtproject"
     testing_repo = "https://api.bintray.com/conan/qtproject/conan-testing@True@qtproject-testing"
@@ -77,16 +90,24 @@ def set_variables():
         set_env_variable_if_undefined("CONAN_REMOTES", f"{testing_repo}, {production_repo}")
 
 
+def prepare_conan_options(config):
+    if config.has_section('conan_options'):
+        conan_options_list = []
+        for key in config['conan_options']:
+            conan_options_list.append(f"{key}={ config['conan_options'][key] }")
+        return ",".join(conan_options_list)
+
+
 if __name__ == "__main__":
     args = parse_args()
-    package = parse_config()
-    package_name = package.get('name')
-    package_version = package.get('version')
-    recipe_subdir = package.get('recipe_subdir', 'all')
+    config = parse_config()
+    package_name = config['package'].get('name')
+    package_version = config['package'].get('version')
+    recipe_subdir = config['package'].get('recipe_subdir', 'all')
 
     apply_patches("patches", f"{os.path.dirname(__file__)}/conan-center-index")
     move_files_from_recipe(package_name, recipe_subdir)
-    set_variables()
+    set_variables(prepare_conan_options(config))
 
     builder = ConanMultiPackager(reference=f"{package_name}/{package_version}")
     builder.add_common_builds()
