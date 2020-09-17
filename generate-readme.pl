@@ -16,7 +16,7 @@ sub write_file {
     close $fh;
 }
 
-
+-e 'build.cfg' or die "build.cfg is missing";
 my $config = Config::Tiny->read('build.cfg');
 write_file('README.md', $config->{package});
 write_file('LICENSE', {});
