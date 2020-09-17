@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
+import configparser
 import copy
 import platform
 import os
@@ -13,12 +14,22 @@ from cpt.printer import Printer
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Build package from conan-center-index')
-    parser.add_argument('package_name', type=str, nargs=1, help='Name of package in conan-center-index repository')
-    parser.add_argument('package_version', type=str, nargs=1, help='Package version to build (must be present in config.yml of recipe)')
     parser.add_argument('--shared', action="store_true", help='Build shared libraries')
     parser.add_argument('--static', action="store_true", help='Build static libraries')
-    parser.add_argument('--recipe-subdir', type=str, default='all', help='Subdirectory of recipe in conan-center-index("all" by default)')
     return parser.parse_args()
+
+
+def parse_config():
+    config = configparser.ConfigParser()
+    config.read('build.cfg')
+    if not config.has_section('package'):
+        raise Exception("Malformed build.cfg: [package] section is missing")
+
+    package = config['package']
+    if 'name' in package and 'version' in package:
+        return package
+
+    raise Exception('Malformed build.cfg: "name" and "version" options in [package] section are mandatory')
 
 
 def apply_patches(patch_dir, target_dir):
@@ -68,14 +79,16 @@ def set_variables():
 
 if __name__ == "__main__":
     args = parse_args()
-    package_name = args.package_name[0]
-    package_version = args.package_version[0]
-    package_reference = package_name + "/" + package_version
+    package = parse_config()
+    package_name = package.get('name')
+    package_version = package.get('version')
+    recipe_subdir = package.get('recipe_subdir', 'all')
+
     apply_patches("patches", f"{os.path.dirname(__file__)}/conan-center-index")
-    move_files_from_recipe(package_name, args.recipe_subdir)
+    move_files_from_recipe(package_name, recipe_subdir)
     set_variables()
 
-    builder = ConanMultiPackager(reference=package_reference)
+    builder = ConanMultiPackager(reference=f"{package_name}/{package_version}")
     builder.add_common_builds()
 
     items = []

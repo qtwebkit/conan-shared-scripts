@@ -18,7 +18,7 @@ sub write_file {
 
 
 my $config = Config::Tiny->read('build.cfg');
-write_file('README.md', $config->{_});
+write_file('README.md', $config->{package});
 write_file('LICENSE', {});
 
 
