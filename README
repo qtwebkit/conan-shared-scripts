@@ -1,0 +1,45 @@
+This set of scripts allows to build any package from Conan Center Index (CCI) with
+custom compilers, options, and patches.
+
+Here are a few repositories where these scripts are used:
+https://github.com/qtwebkit/conan-icu
+https://github.com/qtwebkit/conan-libxml2
+https://github.com/qtwebkit/conan-openssl
+
+build.py
+--------
+
+This is the core of this system. It's a wrapper for ConanMultiPackager which:
+
+1. Provides project-specific defaults for Conan environment variables, like
+CONAN_USERNAME etc. They are hardcoded and you need to change them if you want
+to reuse the script.
+
+2. Allows passing --shared and --static options, allowing to build only one
+kind of packages when needed (or when they need different options).
+
+3. Reads input file "build.cfg" from $PWD. It's expected to be in the root of
+package-specific repository having conan-shared-scripts as its submodule.
+Current structure of build.cfg:
+
+    [package]
+    name = somepackage    ; name used in CCI is expected here
+    version = 1.0         ; version must be available in CCI recipe, or patched in
+    recipe_subdir = "dir" ; usual path of recipe in CCI looks like
+                          ; "resipes/somepackage/all/conanfile.py",
+                          ; use this option if you need to replace "all" segment
+                          ; to something else
+    [conan_options]
+    somepackage:someoption = True
+    ; list of options in the same format as in [options] section of conanfile.txt
+
+4. All patches from "patches" directory are applied to the root of CCI repository
+before starting build. Lexicographical ordering is used, so start file names with
+prefixes like "01-", "02-" etc. if you need to enforce certain order.
+
+generate-readme.pl
+-----------------
+
+Produces README.md from template using values from build.cfg. Adds build status
+icons for AppVeyor and GitHub actions if target repository contains appveyor.yml
+and .github/workflows/conan.yml respectively. Also adds template LICENSE file.
