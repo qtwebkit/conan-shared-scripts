@@ -78,6 +78,11 @@ def set_variables(conan_options):
     if conan_options:
         prepend_to_env_variable("CONAN_OPTIONS", conan_options)
 
+    # Improve CI build logs
+    set_env_variable_if_undefined("CONAN_PRINT_RUN_COMMANDS", "1")
+    set_env_variable_if_undefined("CONAN_VERBOSE_TRACEBACK", "1")
+    set_env_variable_if_undefined("CONAN_MSBUILD_VERBOSITY", "normal")
+
     production_repo = "https://api.bintray.com/conan/qtproject/conan@True@qtproject"
     testing_repo = "https://api.bintray.com/conan/qtproject/conan-testing@True@qtproject-testing"
 
