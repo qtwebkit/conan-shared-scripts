@@ -70,7 +70,7 @@ def prepend_to_env_variable(var, value):
 
 def set_variables(conan_options):
     set_env_variable_if_undefined("CONAN_USERNAME", "qtproject")
-    set_env_variable_if_undefined("CONAN_LOGIN_USERNAME", "qtbot")
+    set_env_variable_if_undefined("CONAN_LOGIN_USERNAME", "annulen")
     set_env_variable_if_undefined("CONAN_ARCHS", "x86,x86_64")
     set_env_variable_if_undefined("CONAN_VISUAL_RUNTIMES", "MD,MDd")
     set_env_variable_if_undefined("CONAN_REVISIONS_ENABLED", "1")
@@ -83,8 +83,10 @@ def set_variables(conan_options):
     set_env_variable_if_undefined("CONAN_VERBOSE_TRACEBACK", "1")
     set_env_variable_if_undefined("CONAN_MSBUILD_VERBOSITY", "normal")
 
-    production_repo = "https://api.bintray.com/conan/qtproject/conan@True@qtproject"
-    testing_repo = "https://api.bintray.com/conan/qtproject/conan-testing@True@qtproject-testing"
+    production_repo = "https://qtpkgtest.jfrog.io/artifactory/api/conan/coin-ci-provisioning@True@qtproject"
+    testing_repo = production_repo
+    #production_repo = "https://api.bintray.com/conan/qtproject/conan@True@qtproject"
+    #testing_repo = "https://api.bintray.com/conan/qtproject/conan-testing@True@qtproject-testing"
 
     if is_tag():
         set_env_variable_if_undefined("CONAN_UPLOAD", production_repo)
